@@ -1,0 +1,47 @@
+# To understand the most influential factors that cause bankruptcies, we analyze a bankruptcy dataset and will create a classification tree. The classification
+# tree can help us by only needing certain data to classify a particular person as whether they will go through bankruptcy or not. Below is the R code to create
+# the classification tree which first begins by installing and calling the necessary libraries, turning the D column into a factor of "NoBankruptcy" or "Bankruptcy",
+# creating training and test datasets, and building the classification tree.
+
+install.packages("rpart")
+install.packages("rpart.plot")
+install.packages("caret")
+library(rpart)
+library(rpart.plot)
+library(caret)
+library(readr)
+bkr <- read_csv("Bankruptcy.csv")
+
+bkr2 <- bkr[,-c(1,3)]
+View(bkr2)
+
+bkr2$D <- factor(bkr2$D,levels = c(0,1),labels = c("NoBankruptcy","Bankruptcy"))
+
+summary(bkr2)
+
+set.seed(1)
+train.index <- sample(c(1:dim(bkr2)[1]),dim(bkr2)[1]*(0.6))
+train <- bkr2[train.index,]
+test <- bkr2[-train.index,]
+
+ct <- rpart(D ~ ., data = train,method = "class")
+prp(ct,type = 1,extra = 1,under = FALSE,split.font = 4,varlen = 13)
+
+default.ct.point.pred.train <- predict(ct,train,type = "class")
+confusionMatrix(default.ct.point.pred.train,train$D)
+
+default.ct.point.pred.test <- predict(ct,test,type = "class")
+confusionMatrix(default.ct.point.pred.test,test$D)
+
+
+
+
+
+
+
+
+
+
+
+
+
